@@ -38,5 +38,11 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add .
+        
+          # 配置认证信息
+          remote_repo="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+        
+          # 执行提交和推送
           git diff --quiet && git diff --staged --quiet || git commit -m "Auto update: $(date +'%Y-%m-%d %H:%M UTC')"
-          git push
+          git pull --rebase $remote_repo  # 防止并发更新冲突
+          git push $remote_repo HEAD:main
