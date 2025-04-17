@@ -2,8 +2,8 @@ name: Auto Update Rules
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # 每天UTC时间12点运行
-  workflow_dispatch:      # 支持手动触发
+    - cron: '0 12 * * *'
+  workflow_dispatch:
   push:
     paths:
       - 'source.txt'
@@ -12,32 +12,28 @@ jobs:
   process:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+      - name: Checkout code
+        uses: actions/checkout@v4  # 使用默认检出路径
 
-      - name: 验证目录结构
+      - name: Verify structure
         run: |
-          echo "GitHub工作区路径：${{ github.workspace }}"
-          ls -l ${{ github.workspace }}
-          echo "检查source.txt是否存在："
-          ls -l ${{ github.workspace }}/source.txt
+          echo "工作目录：$(pwd)"
+          ls -l
+          echo "source.txt 路径：${{ github.workspace }}/source.txt"
 
-      - name: 设置Python环境
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: 安装依赖
+      - name: Install dependencies
         run: pip install requests
 
-      - name: 执行处理脚本
+      - name: Run processor
         run: |
-          cd ${{ github.workspace }}
           python scripts/processor.py
 
-      - name: 提交变更
+      - name: Commit changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
