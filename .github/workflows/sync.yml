@@ -1,0 +1,35 @@
+name: Auto Update Rules
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # 每天UTC时间12点运行
+  workflow_dispatch:      # 支持手动触发
+  push:
+    paths:
+      - 'source.txt'
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run processor
+        run: python scripts/processor.py
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Auto update: $(date +'%Y-%m-%d %H:%M UTC')" || echo "No changes to commit"
+          git push
