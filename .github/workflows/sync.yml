@@ -3,7 +3,7 @@ name: Auto Update Rules
 on:
   schedule:
     - cron: '0 12 * * *'  # 每天UTC时间12点运行
-  workflow_dispatch:
+  workflow_dispatch:      # 支持手动触发
   push:
     paths:
       - 'source.txt'
@@ -12,28 +12,35 @@ jobs:
   process:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: 检出代码
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Set up Python
+      - name: 验证目录结构
+        run: |
+          echo "GitHub工作区路径：${{ github.workspace }}"
+          ls -l ${{ github.workspace }}
+          echo "检查source.txt是否存在："
+          ls -l ${{ github.workspace }}/source.txt
+
+      - name: 设置Python环境
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: 安装依赖
         run: pip install requests
 
-      - name: Run processor
+      - name: 执行处理脚本
         run: |
           cd ${{ github.workspace }}
           python scripts/processor.py
 
-      - name: Commit changes
+      - name: 提交变更
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add .
-          git diff-index --quiet HEAD || git commit -m "Auto update: $(date +'%Y-%m-%d %H:%M UTC')"
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto update: $(date +'%Y-%m-%d %H:%M UTC')"
           git push
