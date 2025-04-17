@@ -2,8 +2,10 @@ import requests
 from datetime import datetime
 import os
 
+# 获取仓库根目录路径
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 def process_urls(urls):
-    # 初始化数据结构
     results = {
         'normal': [],
         'strict': [],
@@ -25,13 +27,10 @@ def process_urls(urls):
             
             for line in response.text.splitlines():
                 stripped = line.strip()
-                # 普通模式过滤
                 if stripped and not stripped.startswith('!'):
                     normal_lines.append(line)
-                # 严格模式过滤
-                if stripped and not stripped.startswith('!') and (
-                    stripped.startswith('||') or stripped.startswith('@@')):
-                    strict_lines.append(line)
+                    if stripped.startswith(('||', '@@')):
+                        strict_lines.append(line)
 
             results['stats']['total_lines'] += len(response.text.splitlines())
             results['normal'].extend(normal_lines)
@@ -73,35 +72,44 @@ def update_readme(stats):
 - [普通模式列表](dist/all.txt)
 - [严格模式列表](dist/strict.txt)
 """
-    with open('README.md', 'r') as f:
-        content = f.read()
+    readme_path = os.path.join(BASE_DIR, 'README.md')
+    if os.path.exists(readme_path):
+        with open(readme_path, 'r') as f:
+            content = f.read()
+    else:
+        content = ""
     
-    # 替换更新区块
     start_marker = '<!-- AUTO_UPDATE_START -->'
     end_marker = '<!-- AUTO_UPDATE_END -->'
-    new_content = content.split(start_marker)[0] + \
-        f"{start_marker}\n{template}\n{end_marker}" + \
-        content.split(end_marker)[-1]
     
-    with open('README.md', 'w') as f:
+    if start_marker in content and end_marker in content:
+        new_content = content.split(start_marker)[0] + \
+            f"{start_marker}\n{template}\n{end_marker}" + \
+            content.split(end_marker)[-1]
+    else:
+        new_content = f"{content}\n{start_marker}\n{template}\n{end_marker}"
+
+    with open(readme_path, 'w') as f:
         f.write(new_content)
 
 if __name__ == '__main__':
-    # 读取URL列表
-    with open('source.txt', 'r') as f:
+    # 读取source.txt
+    source_path = os.path.join(BASE_DIR, 'source.txt')
+    with open(source_path, 'r') as f:
         urls = [line.strip() for line in f if line.strip()]
     
     # 处理数据
     results = process_urls(urls)
     
     # 创建输出目录
-    os.makedirs('dist', exist_ok=True)
+    output_dir = os.path.join(BASE_DIR, 'dist')
+    os.makedirs(output_dir, exist_ok=True)
     
     # 保存结果文件
-    with open('dist/all.txt', 'w') as f:
+    with open(os.path.join(output_dir, 'all.txt'), 'w') as f:
         f.write("\n".join(results['normal']))
     
-    with open('dist/strict.txt', 'w') as f:
+    with open(os.path.join(output_dir, 'strict.txt'), 'w') as f:
         f.write("\n".join(results['strict']))
     
     # 更新README
