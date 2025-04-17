@@ -3,17 +3,14 @@ from datetime import datetime
 import os
 import sys
 
-# 动态获取仓库根目录
+# 获取仓库根目录
 def get_base_dir():
-    # GitHub Actions环境变量
-    if 'GITHUB_WORKSPACE' in os.environ:
-        return os.environ['GITHUB_WORKSPACE']
-    # 本地开发环境：脚本位于scripts目录，向上两级到仓库根目录
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    """ 直接使用GitHub Actions的默认工作目录 """
+    return os.getcwd()  # 关键修正：直接使用当前工作目录
 
 BASE_DIR = get_base_dir()
 print(f"[DEBUG] 仓库根目录：{BASE_DIR}")
-print(f"[DEBUG] 当前工作目录：{os.getcwd()}")
+print(f"[DEBUG] 目录内容：{os.listdir(BASE_DIR)}")
 
 def process_urls(urls):
     results = {
