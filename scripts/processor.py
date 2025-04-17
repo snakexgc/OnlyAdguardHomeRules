@@ -1,9 +1,19 @@
 import requests
 from datetime import datetime
 import os
+import sys
 
-# 获取仓库根目录路径
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 动态获取仓库根目录
+def get_base_dir():
+    # GitHub Actions环境变量
+    if 'GITHUB_WORKSPACE' in os.environ:
+        return os.environ['GITHUB_WORKSPACE']
+    # 本地开发环境：脚本位于scripts目录，向上两级到仓库根目录
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+BASE_DIR = get_base_dir()
+print(f"[DEBUG] 仓库根目录：{BASE_DIR}")
+print(f"[DEBUG] 当前工作目录：{os.getcwd()}")
 
 def process_urls(urls):
     results = {
@@ -19,6 +29,7 @@ def process_urls(urls):
 
     for url in urls:
         try:
+            print(f"\n▷ 处理URL: {url[:50]}...")
             response = requests.get(url, timeout=15)
             response.raise_for_status()
             
@@ -27,18 +38,27 @@ def process_urls(urls):
             
             for line in response.text.splitlines():
                 stripped = line.strip()
-                if stripped and not stripped.startswith('!'):
-                    normal_lines.append(line)
-                    if stripped.startswith(('||', '@@')):
-                        strict_lines.append(line)
+                results['stats']['total_lines'] += 1
+                
+                # 空行和注释过滤
+                if not stripped or stripped.startswith('!'):
+                    continue
+                
+                # 普通模式收集
+                normal_lines.append(line)
+                
+                # 严格模式过滤
+                if stripped.startswith(('||', '@@')):
+                    strict_lines.append(line)
 
-            results['stats']['total_lines'] += len(response.text.splitlines())
             results['normal'].extend(normal_lines)
             results['strict'].extend(strict_lines)
+            print(f"  发现有效规则：普通模式 {len(normal_lines)} 条 | 严格模式 {len(strict_lines)} 条")
             
         except Exception as e:
-            print(f"Error processing {url}: {str(e)}")
-    
+            print(f"  × 处理失败：{str(e)}")
+            continue
+
     # 去重处理
     for mode in ['normal', 'strict']:
         seen = set()
@@ -73,8 +93,10 @@ def update_readme(stats):
 - [严格模式列表](dist/strict.txt)
 """
     readme_path = os.path.join(BASE_DIR, 'README.md')
+    
+    # 处理README内容
     if os.path.exists(readme_path):
-        with open(readme_path, 'r') as f:
+        with open(readme_path, 'r', encoding='utf-8') as f:
             content = f.read()
     else:
         content = ""
@@ -89,15 +111,25 @@ def update_readme(stats):
     else:
         new_content = f"{content}\n{start_marker}\n{template}\n{end_marker}"
 
-    with open(readme_path, 'w') as f:
+    with open(readme_path, 'w', encoding='utf-8') as f:
         f.write(new_content)
 
 if __name__ == '__main__':
-    # 读取source.txt
+    # 获取source.txt路径
     source_path = os.path.join(BASE_DIR, 'source.txt')
-    with open(source_path, 'r') as f:
-        urls = [line.strip() for line in f if line.strip()]
+    print(f"[DEBUG] 尝试读取源文件：{source_path}")
     
+    if not os.path.exists(source_path):
+        print(f"错误：未找到 source.txt 文件，请检查仓库根目录")
+        sys.exit(1)
+
+    try:
+        with open(source_path, 'r', encoding='utf-8') as f:
+            urls = [line.strip() for line in f if line.strip()]
+    except Exception as e:
+        print(f"文件读取失败：{str(e)}")
+        sys.exit(1)
+
     # 处理数据
     results = process_urls(urls)
     
@@ -105,12 +137,16 @@ if __name__ == '__main__':
     output_dir = os.path.join(BASE_DIR, 'dist')
     os.makedirs(output_dir, exist_ok=True)
     
-    # 保存结果文件
-    with open(os.path.join(output_dir, 'all.txt'), 'w') as f:
-        f.write("\n".join(results['normal']))
-    
-    with open(os.path.join(output_dir, 'strict.txt'), 'w') as f:
-        f.write("\n".join(results['strict']))
+    # 写入结果文件
+    try:
+        with open(os.path.join(output_dir, 'all.txt'), 'w', encoding='utf-8') as f:
+            f.write("\n".join(results['normal']))
+        with open(os.path.join(output_dir, 'strict.txt'), 'w', encoding='utf-8') as f:
+            f.write("\n".join(results['strict']))
+    except Exception as e:
+        print(f"文件写入失败：{str(e)}")
+        sys.exit(1)
     
     # 更新README
     update_readme(results['stats'])
+    print("\n处理完成！结果已更新")
