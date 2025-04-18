@@ -134,7 +134,8 @@ def update_readme(stats, sources, lite_info):
         for s in sources
     ]
 
-    template = f"""## 自动更新规则列表
+    # 使用三引号字符串避免转义问题
+    template = f'''## 自动更新规则列表
 
 ### 上游规则列表
 {"\n".join(sources_table)}
@@ -151,7 +152,7 @@ def update_readme(stats, sources, lite_info):
 - [全部规则列表](dist/all.txt)
 - [OAdH_ALL 列表](dist/OAdH_ALL.txt)
 - [OAdH_NCR 列表](dist/OAdH_NCR.txt)
-"""
+'''
 
     readme_path = os.path.join(get_base_dir(), 'README.md')
     
