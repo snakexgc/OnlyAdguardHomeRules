@@ -165,10 +165,12 @@ README_TEMPLATE = """# 🛡️ AdGuard Home 规则库
 ---
 
 ## 📥 文件下载
-### 🌐直连
-{download_links}
-### 🚀加速
+🌐直连
+{download_links}  
+
+🚀加速
 {download_links_cn}
+
 ---
 """
 
