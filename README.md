@@ -1,8 +1,8 @@
 # 广告拦截规则库
 
 ## 当前版本
-**版本号**: 202504181532
-**更新时间**: 2025-04-18 15:32 UTC
+**版本号**: 202504181607
+**更新时间**: 2025-04-18 16:07 UTC
 
 ### 数据源清单
 - 81749↑81716↑ @ [https://anti-ad.net/easylist.txt](https%3A//anti-ad.net/easylist.txt)
@@ -13,11 +13,12 @@
 - 50↑49↑ @ [https://raw.githubusercontent.com/changzhaoCZ/fqnovel-adrules/refs/heads/main/fqnovel-fxxk_ads](https%3A//raw.githubusercontent.com/changzhaoCZ/fqnovel-adrules/refs/heads/main/fqnovel-fxxk_ads)
 - 199↑134↑ @ [https://raw.gitmirror.com/TTDNS/Cat/main/TT拒绝列表清单 (更新中).txt](https%3A//raw.gitmirror.com/TTDNS/Cat/main/TT%E6%8B%92%E7%BB%9D%E5%88%97%E8%A1%A8%E6%B8%85%E5%8D%95%20%28%E6%9B%B4%E6%96%B0%E4%B8%AD%29.txt)
 - 107944↑107943↑ @ [https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt](https%3A//raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt)
+- 814199↑787854↑ @ [https://raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt](https%3A//raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt)
 
 ### 规则统计
-- 总规则数: 539583 (去重过滤 267123)
-- 严格规则: 325719 (过滤 267116)
-- 精简规则: 323256 (冲突过滤 1916)
+- 总规则数: 1104370 (去重过滤 516535)
+- 严格规则: 864175 (过滤 516514)
+- 精简规则: 861682 (冲突过滤 1945)
 
 ## 文件列表
 - [全部规则](dist/all.txt)
