@@ -121,6 +121,26 @@ def process_urls(urls):
     
     return results
 
+def safe_write_file(path, content):
+    """安全写入文件，仅在内容变化时更新，返回是否发生变更"""
+    # 统一换行符为LF
+    normalized_content = '\n'.join(content.splitlines()) + '\n'
+    
+    # 检测是否需要写入
+    if os.path.exists(path):
+        with open(path, 'r', encoding='utf-8') as f:
+            existing_content = f.read()
+        if existing_content == normalized_content:
+            return False
+    
+    # 写入文件
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(normalized_content)
+    return True
+
+# 原有代码的其他函数保持不变...
+
 README_TEMPLATE = """# 🛡️ AdGuard 规则库
 
 ---
