@@ -120,58 +120,61 @@ def process_urls(urls):
     
     return results
 
+README_TEMPLATE = """# 广告拦截规则库
+
+## 当前版本
+**版本号**: {version}
+**更新时间**: {timestamp}
+
+{source_section}
+
+{stats_section}
+
+## 文件列表
+{download_links}
+"""
+
 def update_readme(stats, sources, lite_info):
-    """模块化构建README内容"""
-    lite_rules, lite_duplicates = lite_info
+    """版本化内容管理"""
+    # 生成各区块内容
+    version = datetime.utcnow().strftime("%Y%m%d%H%M")
     
-    # 构建表格生成器
-    def build_table(headers, rows):
-        sep_line = "| " + " | ".join(["-"*len(h) for h in headers]) + " |"
-        return "\n".join([
-            "| " + " | ".join(headers) + " |",
-            sep_line,
-            *["| " + " | ".join(map(str, row)) + " |" for row in rows]
-        ])
-    
-    # 数据源表格
-    source_rows = [
-        ["总数据源数量", stats['total_urls']],
-        *[[f"[{s['url']}]({quote(s['url'], safe='/:')})", s['normal'], s['strict']] for s in sources]
+    # 数据源列表
+    source_lines = ["### 数据源清单"] + [
+        f"- {s['normal']}↑{s['strict']}↑ @ [{s['url']}]({quote(s['url'])})"
+        for s in sources
     ]
-    sources_table = build_table(["类别", "全部规则数", "OAdH_ALL规则数"], source_rows)
     
-    # 统计表格
-    stats_rows = [
-        ["有效规则数", stats['normal']['valid'], stats['strict']['valid'], len(lite_rules)],
-        ["重复过滤数", stats['normal']['duplicates'], stats['strict']['duplicates'], lite_duplicates]
+    # 统计信息
+    stats_lines = [
+        "### 规则统计",
+        f"- 总规则数: {stats['normal']['valid']} (去重过滤 {stats['normal']['duplicates']})",
+        f"- 严格规则: {stats['strict']['valid']} (过滤 {stats['strict']['duplicates']})",
+        f"- 精简规则: {len(lite_info[0])} (冲突过滤 {lite_info[1]})"
     ]
-    stats_table = build_table(["类别", "全部规则", "OAdH_ALL", "OAdH_NCR"], stats_rows)
     
-    # 组装完整内容
-    content = f"""## 自动更新规则列表
-
-### 数据源信息
-{sources_table}
-
-### 规则统计
-{stats_table}
-
-**最后更新时间**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}
-
-### 文件下载
-- [全部规则](dist/all.txt)
-- [OAdH_ALL规则](dist/OAdH_ALL.txt)
-- [OAdH_NCR规则](dist/OAdH_NCR.txt)"""
+    # 下载链接
+    downloads = [
+        "- [全部规则](dist/all.txt)",
+        "- [OAdH_ALL](dist/OAdH_ALL.txt)",
+        "- [OAdH_NCR](dist/OAdH_NCR.txt)"
+    ]
+    
+    # 组装内容
+    content = README_TEMPLATE.format(
+        version=version,
+        timestamp=datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC'),
+        source_section="\n".join(source_lines),
+        stats_section="\n".join(stats_lines),
+        download_links="\n".join(downloads)
+    )
     
     # 变更检测
     readme_path = os.path.join(get_base_dir(), 'README.md')
-    current_hash = hashlib.md5(content.encode()).hexdigest()
-    
     if os.path.exists(readme_path):
-        with open(readme_path, 'rb') as f:
-            existing_hash = hashlib.md5(f.read()).hexdigest()
-        if current_hash == existing_hash:
-            return False
+        with open(readme_path, 'r', encoding='utf-8') as f:
+            if f.read() == content:
+                return False
     
     with open(readme_path, 'w', encoding='utf-8') as f:
         f.write(content)
