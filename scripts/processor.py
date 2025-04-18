@@ -4,6 +4,7 @@ import os
 import sys
 from datetime import datetime
 from urllib.parse import quote
+import hashlib
 
 def get_base_dir():
     """获取仓库根目录"""
@@ -120,73 +121,91 @@ def process_urls(urls):
     
     return results
 
-README_TEMPLATE = """# 广告拦截规则库
+README_TEMPLATE = """# 🛡️ AdGuard 规则库
 
-## 当前版本
-**版本号**: {version}
-**更新时间**: {timestamp}
+---
 
+## 📦 当前版本
+**版本标识**: {version}  
+**更新时间**: {timestamp}  
+
+---
+
+## 📂 数据源列表
 {source_section}
 
+---
+
+## 📊 规则统计
 {stats_section}
 
-## 文件列表
+---
+
+## 📥 文件下载
 {download_links}
+
+---
+
+> 🔄 最后更新时间：{timestamp}
 """
 
 def update_readme(stats, sources, lite_info):
-    """版本化内容管理"""
-    # 生成各区块内容
-    version = datetime.utcnow().strftime("%Y%m%d%H%M")
+    """生成美观的README文档"""
+    # 生成版本信息（示例：v202404200830）
+    version = f"v{datetime.utcnow().strftime('%Y%m%d%H%M')}"
     
-    # 数据源列表
-    source_lines = ["### 数据源清单"] + [
-        f"- {s['normal']}↑{s['strict']}↑ @ [{s['url']}]({quote(s['url'])})"
-        for s in sources
+    # 生成带样式的数据源表格
+    def format_source(source):
+        encoded_url = quote(source['url'], safe='/:')
+        return f"| 🔗 [{source['url']}]({encoded_url}) | `{source['normal']}` | `{source['strict']}` |"
+    
+    source_table = [
+        "| 数据源地址 | 普通规则数 | 严格规则数 |",
+        "|----------|-----------|-----------|",
+        *map(format_source, sources)
     ]
     
-    # 统计信息
-    stats_lines = [
-        "### 规则统计",
-        f"- 总规则数: {stats['normal']['valid']} (去重过滤 {stats['normal']['duplicates']})",
-        f"- 严格规则: {stats['strict']['valid']} (过滤 {stats['strict']['duplicates']})",
-        f"- 精简规则: {len(lite_info[0])} (冲突过滤 {lite_info[1]})"
+    # 生成统计信息卡片
+    stats_cards = [
+        "**全部规则**：",
+        f"- 有效规则：`{stats['normal']['valid']}`  "  # 末尾双空格强制换行
+        f"- 重复过滤：`{stats['normal']['duplicates']}`\n",
+        
+        "**严格模式 (OAdH_ALL)**：",
+        f"- 有效规则：`{stats['strict']['valid']}`  "
+        f"- 重复过滤：`{stats['strict']['duplicates']}`\n",
+        
+        "**精简模式 (OAdH_NCR)**：",
+        f"- 有效规则：`{len(lite_info[0])}`  "
+        f"- 冲突过滤：`{lite_info[1]}`"
     ]
     
-    # 下载链接
-    downloads = [
-        "- [全部规则](dist/all.txt)",
-        "- [OAdH_ALL](dist/OAdH_ALL.txt)",
-        "- [OAdH_NCR](dist/OAdH_NCR.txt)"
+    # 生成带图标的下载链接
+    download_links = [
+        "🔗 [全部规则 (all.txt)](dist/all.txt)  ",
+        "🔒 [严格规则 (OAdH_ALL.txt)](dist/OAdH_ALL.txt)  ",
+        "✂️ [精简规则 (OAdH_NCR.txt)](dist/OAdH_NCR.txt)"
     ]
     
     # 组装内容
     content = README_TEMPLATE.format(
         version=version,
         timestamp=datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC'),
-        source_section="\n".join(source_lines),
-        stats_section="\n".join(stats_lines),
-        download_links="\n".join(downloads)
+        source_section="\n".join(source_table),
+        stats_section="\n".join(stats_cards),
+        download_links="\n".join(download_links)
     )
     
-    # 变更检测
+    # 变更检测（哈希校验）
     readme_path = os.path.join(get_base_dir(), 'README.md')
+    current_hash = hashlib.md5(content.encode()).hexdigest()
+    
     if os.path.exists(readme_path):
-        with open(readme_path, 'r', encoding='utf-8') as f:
-            if f.read() == content:
+        with open(readme_path, 'rb') as f:
+            if hashlib.md5(f.read()).hexdigest() == current_hash:
                 return False
     
     with open(readme_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    return True
-
-def safe_write_file(path, content):
-    """安全写入文件，返回是否有变更"""
-    if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8') as f:
-            if f.read() == content:
-                return False
-    with open(path, 'w', encoding='utf-8') as f:
         f.write(content)
     return True
 
