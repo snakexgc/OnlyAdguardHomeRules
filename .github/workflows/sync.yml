@@ -39,7 +39,6 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           python scripts/processor.py
-          echo "has_changes=${{ has_changes }}" >> $GITHUB_OUTPUT
 
       - name: Commit changes
         if: steps.process.outputs.has_changes == 'true'
