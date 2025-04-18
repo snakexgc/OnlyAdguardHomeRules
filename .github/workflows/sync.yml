@@ -43,13 +43,8 @@ jobs:
           commit_msg="Auto update: $(date +'%Y-%m-%d %H:%M UTC')"
           remote_repo="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           
-          git pull --rebase $remote_repo main || {
-            echo "检测到冲突，执行强制推送..."
-            git reset --hard origin/main
-            git pull $remote_repo main
-            git add .
-            git commit -m "$commit_msg (冲突解决)"
-            git push $remote_repo HEAD:main --force
-          }
-          
-          git push $remote_repo HEAD:main
+          # 始终基于远程最新版本强制推送
+          git pull $remote_repo main
+          git add .
+          git commit -m "$commit_msg" || echo "无新变更"
+          git push $remote_repo HEAD:main --force
