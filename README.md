@@ -8,8 +8,8 @@
 ---
 
 ## 📦 当前版本
-**版本标识**: v202504181659  
-**更新时间**: 2025-04-18 16:59 UTC  
+**版本标识**: v202504181700  
+**更新时间**: 2025-04-18 17:00 UTC  
 
 ---
 
@@ -41,12 +41,14 @@
 ---
 
 ## 📥 文件下载
-🌐直连
+### 🌐直连  
+
 🔗 [全部规则 (all.txt)](dist/all.txt)  
 🔒 [OAdH规则 (OAdH_ALL.txt)](dist/OAdH_ALL.txt)  
 ✂️ [OAdH去冲突规则 (OAdH_NCR.txt)](dist/OAdH_NCR.txt)  
 
-🚀加速
+### 🚀加速  
+
 🔗 [全部规则 (all.txt)](https://github.snakexgc.com/https://github.com/snakexgc/OnlyAdguardHomeRules/blob/main/dist/all.txt)  
 🔒 [OAdH规则 (OAdH_ALL.txt)](https://github.snakexgc.com/https://github.com/snakexgc/OnlyAdguardHomeRules/blob/main/dist/OAdH_ALL.txt)  
 ✂️ [OAdH去冲突规则 (OAdH_NCR.txt)](https://github.snakexgc.com/https://github.com/snakexgc/OnlyAdguardHomeRules/blob/main/dist/OAdH_NCR.txt)
