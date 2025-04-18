@@ -3,19 +3,18 @@ from datetime import datetime
 import os
 import sys
 
-# 获取仓库根目录
 def get_base_dir():
-    """ 直接使用GitHub Actions的默认工作目录 """
-    return os.getcwd()  # 关键修正：直接使用当前工作目录
+    if 'GITHUB_WORKSPACE' in os.environ:
+        return os.environ['GITHUB_WORKSPACE']
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 BASE_DIR = get_base_dir()
-print(f"[DEBUG] 仓库根目录：{BASE_DIR}")
-print(f"[DEBUG] 目录内容：{os.listdir(BASE_DIR)}")
 
 def process_urls(urls):
     results = {
         'normal': [],
         'strict': [],
+        'sources': [],
         'stats': {
             'total_urls': len(urls),
             'total_lines': 0,
@@ -26,10 +25,11 @@ def process_urls(urls):
 
     for url in urls:
         try:
-            print(f"\n▷ 处理URL: {url[:50]}...")
             response = requests.get(url, timeout=15)
             response.raise_for_status()
             
+            normal_count = 0
+            strict_count = 0
             normal_lines = []
             strict_lines = []
             
@@ -37,23 +37,35 @@ def process_urls(urls):
                 stripped = line.strip()
                 results['stats']['total_lines'] += 1
                 
-                # 空行和注释过滤
                 if not stripped or stripped.startswith('!'):
                     continue
                 
-                # 普通模式收集
+                # 普通模式计数
+                normal_count += 1
                 normal_lines.append(line)
                 
-                # 严格模式过滤
+                # 严格模式计数
                 if stripped.startswith(('||', '@@')):
+                    strict_count += 1
                     strict_lines.append(line)
-
+            
+            # 记录来源数据
+            results['sources'].append({
+                'url': url,
+                'normal': normal_count,
+                'strict': strict_count
+            })
+            
             results['normal'].extend(normal_lines)
             results['strict'].extend(strict_lines)
-            print(f"  发现有效规则：普通模式 {len(normal_lines)} 条 | 严格模式 {len(strict_lines)} 条")
             
         except Exception as e:
-            print(f"  × 处理失败：{str(e)}")
+            print(f"处理失败：{str(e)}")
+            results['sources'].append({
+                'url': url,
+                'normal': 0,
+                'strict': 0
+            })
             continue
 
     # 去重处理
@@ -73,25 +85,36 @@ def process_urls(urls):
     
     return results
 
-def update_readme(stats):
+def update_readme(stats, sources):
+    # 生成来源表格
+    sources_table = "\n".join(
+        f"| [{s['url']}]({s['url']}) | {s['normal']} | {s['strict']} |"
+        for s in sources
+    )
+
     template = f"""## 自动更新规则列表
 
-最后更新时间：{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}
+### 上游规则列表
+| 来源地址 | 普通模式规则数 | 严格模式规则数 |
+|----------|----------------|----------------|
+{sources_table}
 
 ### 统计信息
 | 类别        | 普通模式       | 严格模式       |
 |-------------|---------------|---------------|
+| 数据源数量  | {stats['total_urls']:>6}       | {stats['total_urls']:>6}       |
 | 有效规则数  | {stats['normal']['valid']:>6}       | {stats['strict']['valid']:>6}       |
 | 重复过滤数  | {stats['normal']['duplicates']:>6}       | {stats['strict']['duplicates']:>6}       |
-| 数据源数量  | {stats['total_urls']:>6}         | {"-"*11}       |
+
+最后更新时间：{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}
 
 ### 下载链接
 - [普通模式列表](dist/all.txt)
 - [严格模式列表](dist/strict.txt)
 """
+
     readme_path = os.path.join(BASE_DIR, 'README.md')
     
-    # 处理README内容
     if os.path.exists(readme_path):
         with open(readme_path, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -112,12 +135,10 @@ def update_readme(stats):
         f.write(new_content)
 
 if __name__ == '__main__':
-    # 获取source.txt路径
     source_path = os.path.join(BASE_DIR, 'source.txt')
-    print(f"[DEBUG] 尝试读取源文件：{source_path}")
     
     if not os.path.exists(source_path):
-        print(f"错误：未找到 source.txt 文件，请检查仓库根目录")
+        print(f"错误：未找到 source.txt")
         sys.exit(1)
 
     try:
@@ -127,14 +148,11 @@ if __name__ == '__main__':
         print(f"文件读取失败：{str(e)}")
         sys.exit(1)
 
-    # 处理数据
     results = process_urls(urls)
     
-    # 创建输出目录
     output_dir = os.path.join(BASE_DIR, 'dist')
     os.makedirs(output_dir, exist_ok=True)
     
-    # 写入结果文件
     try:
         with open(os.path.join(output_dir, 'all.txt'), 'w', encoding='utf-8') as f:
             f.write("\n".join(results['normal']))
@@ -144,6 +162,5 @@ if __name__ == '__main__':
         print(f"文件写入失败：{str(e)}")
         sys.exit(1)
     
-    # 更新README
-    update_readme(results['stats'])
-    print("\n处理完成！结果已更新")
+    update_readme(results['stats'], results['sources'])
+    print("处理完成！")
