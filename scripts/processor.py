@@ -139,10 +139,13 @@ def safe_write_file(path, content):
         f.write(normalized_content)
     return True
 
-# 原有代码的其他函数保持不变...
-
-README_TEMPLATE = """# 🛡️ AdGuard 规则库
-
+README_TEMPLATE = """# 🛡️ AdGuard Home 规则库
+---
+## 🤔 简介
+融合多个Adguard规则，最终筛选出适用于Adguard Home使用的DNS规则  
+- 全部规则：仅去重  
+- OAdH规则(OAdH_ALL)：仅DNS规则 **(推荐)**
+- OAdH去冲突规则(OAdH_NCR)：去除黑白名单同时存在的情况 **(实验性)**
 ---
 
 ## 📦 当前版本
@@ -162,16 +165,15 @@ README_TEMPLATE = """# 🛡️ AdGuard 规则库
 ---
 
 ## 📥 文件下载
+### 🌐直连
 {download_links}
-
+### 🚀加速
+{download_links_cn}
 ---
-
-> 🔄 最后更新时间：{timestamp}
 """
 
 def update_readme(stats, sources, lite_info):
-    """生成美观的README文档"""
-    # 生成版本信息（示例：v202404200830）
+    # 生成版本信息
     version = f"v{datetime.utcnow().strftime('%Y%m%d%H%M')}"
     
     # 生成带样式的数据源表格
@@ -180,7 +182,7 @@ def update_readme(stats, sources, lite_info):
         return f"| 🔗 [{source['url']}]({encoded_url}) | `{source['normal']}` | `{source['strict']}` |"
     
     source_table = [
-        "| 数据源地址 | 普通规则数 | 严格规则数 |",
+        "| 数据源地址 | 源规则数 | OAdH规则数 |",
         "|----------|-----------|-----------|",
         *map(format_source, sources)
     ]
@@ -191,11 +193,11 @@ def update_readme(stats, sources, lite_info):
         f"- 有效规则：`{stats['normal']['valid']}`  "  # 末尾双空格强制换行
         f"- 重复过滤：`{stats['normal']['duplicates']}`\n",
         
-        "**严格模式 (OAdH_ALL)**：",
+        "**OAdH规则 (OAdH_ALL)**：",
         f"- 有效规则：`{stats['strict']['valid']}`  "
         f"- 重复过滤：`{stats['strict']['duplicates']}`\n",
         
-        "**精简模式 (OAdH_NCR)**：",
+        "**OAdH去冲突规则 (OAdH_NCR)**：",
         f"- 有效规则：`{len(lite_info[0])}`  "
         f"- 冲突过滤：`{lite_info[1]}`"
     ]
@@ -203,8 +205,13 @@ def update_readme(stats, sources, lite_info):
     # 生成带图标的下载链接
     download_links = [
         "🔗 [全部规则 (all.txt)](dist/all.txt)  ",
-        "🔒 [严格规则 (OAdH_ALL.txt)](dist/OAdH_ALL.txt)  ",
-        "✂️ [精简规则 (OAdH_NCR.txt)](dist/OAdH_NCR.txt)"
+        "🔒 [OAdH规则 (OAdH_ALL.txt)](dist/OAdH_ALL.txt)  ",
+        "✂️ [OAdH去冲突规则 (OAdH_NCR.txt)](dist/OAdH_NCR.txt)"
+    ]
+    download_links_cn = [
+        "🔗 [全部规则 (all.txt)](https://github.snakexgc.com/https://github.com/snakexgc/OnlyAdguardHomeRules/blob/main/dist/all.txt)  ",
+        "🔒 [OAdH规则 (OAdH_ALL.txt)](https://github.snakexgc.com/https://github.com/snakexgc/OnlyAdguardHomeRules/blob/main/dist/OAdH_ALL.txt)  ",
+        "✂️ [OAdH去冲突规则 (OAdH_NCR.txt)](https://github.snakexgc.com/https://github.com/snakexgc/OnlyAdguardHomeRules/blob/main/dist/OAdH_NCR.txt)"
     ]
     
     # 组装内容
