@@ -121,67 +121,61 @@ def process_urls(urls):
     return results
 
 def update_readme(stats, sources, lite_info):
-    """更新 README 文档，返回是否有变更"""
+    """模块化构建README内容"""
     lite_rules, lite_duplicates = lite_info
     
-    # 生成来源表格
-    sources_table = [
-        f"| 总数据源数量 | {stats['total_urls']} |",
-        "|--------------|----------------|",
-        "| 来源地址 | 全部规则数 | OAdH_ALL规则数 |"
-    ] + [
-        f"| [{s['url']}]({quote(s['url'], safe='/:')}) | {s['normal']} | {s['strict']} |"
-        for s in sources
-    ]
-
-    template = f'''## 自动更新规则列表
-
-### 上游规则列表
-{"\n".join(sources_table)}
-
-### 统计信息
-| 类别        | 全部规则       | OAdH_ALL       | OAdH_NCR       |
-|-------------|---------------|---------------|---------------|
-| 有效规则数  | {stats['normal']['valid']:>6} | {stats['strict']['valid']:>6} | {len(lite_rules):>6} |
-| 重复过滤数  | {stats['normal']['duplicates']:>6} | {stats['strict']['duplicates']:>6} | {lite_duplicates:>6} |
-
-最后更新时间：{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}
-
-### 下载链接
-- [全部规则列表](dist/all.txt)
-- [OAdH_ALL 列表](dist/OAdH_ALL.txt)
-- [OAdH_NCR 列表](dist/OAdH_NCR.txt)'''
-
-    readme_path = os.path.join(get_base_dir(), 'README.md')
-    new_content = ""
-    has_changes = False
+    # 构建表格生成器
+    def build_table(headers, rows):
+        sep_line = "| " + " | ".join(["-"*len(h) for h in headers]) + " |"
+        return "\n".join([
+            "| " + " | ".join(headers) + " |",
+            sep_line,
+            *["| " + " | ".join(map(str, row)) + " |" for row in rows]
+        ])
     
-    start_marker = '<!-- AUTO_UPDATE_START -->'
-    end_marker = '<!-- AUTO_UPDATE_END -->'
+    # 数据源表格
+    source_rows = [
+        ["总数据源数量", stats['total_urls']],
+        *[[f"[{s['url']}]({quote(s['url'], safe='/:')})", s['normal'], s['strict']] for s in sources]
+    ]
+    sources_table = build_table(["类别", "全部规则数", "OAdH_ALL规则数"], source_rows)
+    
+    # 统计表格
+    stats_rows = [
+        ["有效规则数", stats['normal']['valid'], stats['strict']['valid'], len(lite_rules)],
+        ["重复过滤数", stats['normal']['duplicates'], stats['strict']['duplicates'], lite_duplicates]
+    ]
+    stats_table = build_table(["类别", "全部规则", "OAdH_ALL", "OAdH_NCR"], stats_rows)
+    
+    # 组装完整内容
+    content = f"""## 自动更新规则列表
+
+### 数据源信息
+{sources_table}
+
+### 规则统计
+{stats_table}
+
+**最后更新时间**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}
+
+### 文件下载
+- [全部规则](dist/all.txt)
+- [OAdH_ALL规则](dist/OAdH_ALL.txt)
+- [OAdH_NCR规则](dist/OAdH_NCR.txt)"""
+    
+    # 变更检测
+    readme_path = os.path.join(get_base_dir(), 'README.md')
+    current_hash = hashlib.md5(content.encode()).hexdigest()
     
     if os.path.exists(readme_path):
-        with open(readme_path, 'r', encoding='utf-8') as f:
-            exists_content = f.read()
-        
-        # 生成新内容
-        if start_marker in exists_content and end_marker in exists_content:
-            new_content = exists_content.split(start_marker)[0] + \
-                        f"{start_marker}\n{template}\n{end_marker}" + \
-                        exists_content.split(end_marker)[-1]
-        else:
-            new_content = f"{exists_content}\n{start_marker}\n{template}\n{end_marker}"
-        
-        # 比较内容差异
-        if new_content.strip() != exists_content.strip():
-            has_changes = True
-            with open(readme_path, 'w', encoding='utf-8') as f:
-                f.write(new_content)
-    else:
-        has_changes = True
-        with open(readme_path, 'w', encoding='utf-8') as f:
-            f.write(f"{start_marker}\n{template}\n{end_marker}")
+        with open(readme_path, 'rb') as f:
+            existing_hash = hashlib.md5(f.read()).hexdigest()
+        if current_hash == existing_hash:
+            return False
     
-    return has_changes
+    with open(readme_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    return True
 
 def safe_write_file(path, content):
     """安全写入文件，返回是否有变更"""
