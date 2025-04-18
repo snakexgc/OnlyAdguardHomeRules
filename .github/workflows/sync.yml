@@ -15,9 +15,8 @@ on:
 jobs:
   process:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     outputs:
-      has_changes: ${{ steps.process.outputs.has_changes }}
+      has_changes: ${{ steps.processor.outputs.has_changes }}
     
     steps:
       - name: Checkout code
@@ -34,22 +33,32 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Process rules
-        id: process
+      - name: Run processor
+        id: processor
         run: |
           cd ${{ github.workspace }}
           python scripts/processor.py
+          # 自动读取GITHUB_OUTPUT内容
+        env:
+          GITHUB_OUTPUT: ${{ github.workflow }}-${{ github.run_number }}.log
 
       - name: Commit changes
-        if: steps.process.outputs.has_changes == 'true'
+        if: ${{ steps.processor.outputs.has_changes == 'true' }}
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
+          # 添加所有变更文件
           git add .
-          commit_time=$(date -u +"%Y-%m-%d %H:%M UTC")
-          git commit -m "Auto update: $commit_time"
           
+          # 生成带时间戳的提交信息
+          commit_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          commit_msg="Auto update: $commit_time"
+          
+          # 配置远程仓库
           remote_repo="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          
+          # 拉取最新代码并推送
           git pull --rebase $remote_repo main
+          git commit -m "$commit_msg"
           git push $remote_repo HEAD:main
