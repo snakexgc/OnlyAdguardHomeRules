@@ -220,7 +220,8 @@ def update_readme(stats, sources, lite_info):
         timestamp=datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC'),
         source_section="\n".join(source_table),
         stats_section="\n".join(stats_cards),
-        download_links="\n".join(download_links)
+        download_links="\n".join(download_links),
+        download_links_cn="\n".join(download_links_cn)
     )
     
     # 变更检测（哈希校验）
