@@ -1,15 +1,20 @@
-# 🛡️ AdGuard 规则库
-
+# 🛡️ AdGuard Home 规则库
+---
+## 🤔 简介
+融合多个Adguard规则，最终筛选出适用于Adguard Home使用的DNS规则  
+- 全部规则：仅去重  
+- OAdH规则(OAdH_ALL)：仅DNS规则 **(推荐)**
+- OAdH去冲突规则(OAdH_NCR)：去除黑白名单同时存在的情况 **(实验性)**
 ---
 
 ## 📦 当前版本
-**版本标识**: v202504181641  
-**更新时间**: 2025-04-18 16:41 UTC  
+**版本标识**: v202504181653  
+**更新时间**: 2025-04-18 16:53 UTC  
 
 ---
 
 ## 📂 数据源列表
-| 数据源地址 | 普通规则数 | 严格规则数 |
+| 数据源地址 | 源规则数 | OAdH规则数 |
 |----------|-----------|-----------|
 | 🔗 [https://anti-ad.net/easylist.txt](https://anti-ad.net/easylist.txt) | `81749` | `81716` |
 | 🔗 [https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockdns.txt](https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockdns.txt) | `222762` | `222762` |
@@ -27,19 +32,21 @@
 **全部规则**：
 - 有效规则：`1104522`  - 重复过滤：`516587`
 
-**严格模式 (OAdH_ALL)**：
+**OAdH规则 (OAdH_ALL)**：
 - 有效规则：`864242`  - 重复过滤：`516566`
 
-**精简模式 (OAdH_NCR)**：
+**OAdH去冲突规则 (OAdH_NCR)**：
 - 有效规则：`861749`  - 冲突过滤：`1945`
 
 ---
 
 ## 📥 文件下载
+### 🌐直连
 🔗 [全部规则 (all.txt)](dist/all.txt)  
-🔒 [严格规则 (OAdH_ALL.txt)](dist/OAdH_ALL.txt)  
-✂️ [精简规则 (OAdH_NCR.txt)](dist/OAdH_NCR.txt)
-
+🔒 [OAdH规则 (OAdH_ALL.txt)](dist/OAdH_ALL.txt)  
+✂️ [OAdH去冲突规则 (OAdH_NCR.txt)](dist/OAdH_NCR.txt)
+### 🚀加速
+🔗 [全部规则 (all.txt)](https://github.snakexgc.com/https://github.com/snakexgc/OnlyAdguardHomeRules/blob/main/dist/all.txt)  
+🔒 [OAdH规则 (OAdH_ALL.txt)](https://github.snakexgc.com/https://github.com/snakexgc/OnlyAdguardHomeRules/blob/main/dist/OAdH_ALL.txt)  
+✂️ [OAdH去冲突规则 (OAdH_NCR.txt)](https://github.snakexgc.com/https://github.com/snakexgc/OnlyAdguardHomeRules/blob/main/dist/OAdH_NCR.txt)
 ---
-
-> 🔄 最后更新时间：2025-04-18 16:41 UTC
