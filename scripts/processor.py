@@ -234,5 +234,7 @@ if __name__ == '__main__':
     has_changes |= readme_changed
 
     # 设置输出变量
-    print(f"::set-output name=has_changes::{str(has_changes).lower()}")
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+        print(f'has_changes={str(has_changes).lower()}', file=fh)
+    
     print(f"处理完成{'，检测到变更' if has_changes else '，无新变更'}")
