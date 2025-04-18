@@ -5,3 +5,4 @@ https://adrules.top/adblock_plus.txt
 https://raw.githubusercontent.com/afwfv/DD-AD/main/rule/DD-AD.txt
 https://raw.githubusercontent.com/changzhaoCZ/fqnovel-adrules/refs/heads/main/fqnovel-fxxk_ads
 https://raw.gitmirror.com/TTDNS/Cat/main/TT拒绝列表清单 (更新中).txt
+https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt
