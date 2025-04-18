@@ -6,7 +6,7 @@ concurrency:
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # 每天UTC时间12点运行
+    - cron: '30 */8 * * *'
   workflow_dispatch:
   push:
     paths:
@@ -30,7 +30,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install requests hashlib
 
       - name: Generate rules
         run: |
