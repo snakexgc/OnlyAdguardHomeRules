@@ -150,7 +150,7 @@ def update_readme(stats, sources, lite_info):
 ### 下载链接
 - [全部规则列表](dist/all.txt)
 - [OAdH_ALL 列表](dist/OAdH_ALL.txt)
-- [OAdH_NCR 列表](dist/OAdH_NCR.txt) '''
+- [OAdH_NCR 列表](dist/OAdH_NCR.txt)
 
     readme_path = os.path.join(get_base_dir(), 'README.md')
     new_content = ""
