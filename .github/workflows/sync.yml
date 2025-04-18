@@ -6,7 +6,7 @@ concurrency:
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # 每天UTC时间12点运行
+    - cron: '0 */8 * * *'  # 每天UTC时间12点运行
   workflow_dispatch:
   push:
     paths:
@@ -43,8 +43,8 @@ jobs:
           commit_msg="Auto update: $(date +'%Y-%m-%d %H:%M UTC')"
           remote_repo="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           
-          # 始终基于远程最新版本强制推送
+          # 强制推送策略
           git pull $remote_repo main
           git add .
-          git commit -m "$commit_msg" || echo "无新变更"
+          git commit -m "$commit_msg" || echo "No changes to commit"
           git push $remote_repo HEAD:main --force
