@@ -43,6 +43,7 @@ jobs:
           git pull origin main
           # 生成规则文件
           cd ${{ github.workspace }}
+          pip install -e .
           python scripts/processor.py
 
       - name: Commit changes
