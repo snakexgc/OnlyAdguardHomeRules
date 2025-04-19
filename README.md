@@ -8,8 +8,8 @@
 ---
 
 ## 📦 当前版本
-**版本标识**: v202504191609  
-**更新时间**: 2025-04-19 16:09 UTC  
+**版本标识**: v202504191641  
+**更新时间**: 2025-04-19 16:41 UTC  
 
 ---
 
@@ -24,21 +24,21 @@
 | 🔗 [https://raw.githubusercontent.com/changzhaoCZ/fqnovel-adrules/refs/heads/main/fqnovel-fxxk_ads](https://raw.githubusercontent.com/changzhaoCZ/fqnovel-adrules/refs/heads/main/fqnovel-fxxk_ads) | `50` | `49` |
 | 🔗 [https://raw.gitmirror.com/TTDNS/Cat/main/TT拒绝列表清单 (更新中).txt](https://raw.gitmirror.com/TTDNS/Cat/main/TT%E6%8B%92%E7%BB%9D%E5%88%97%E8%A1%A8%E6%B8%85%E5%8D%95%20%28%E6%9B%B4%E6%96%B0%E4%B8%AD%29.txt) | `199` | `134` |
 | 🔗 [https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt](https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt) | `107872` | `107871` |
-| 🔗 [https://raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt](https://raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt) | `814528` | `788193` |
+| 🔗 [https://raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt](https://raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt) | `814684` | `788234` |
 
 ---
 
 ## 📊 规则统计
 **全部规则**：
-- 有效规则：`1104795`  
-- 重复过滤：`516833`
+- 有效规则：`1104880`  
+- 重复过滤：`516904`
 
 **OAdH规则 (OAdH_ALL)**：
-- 有效规则：`864582`  
-- 重复过滤：`516812`
+- 有效规则：`864552`  
+- 重复过滤：`516883`
 
 **OAdH去冲突规则 (OAdH_NCR)**：
-- 有效规则：`862092`  
+- 有效规则：`862062`  
 - 冲突过滤：`1942`
 
 ---
