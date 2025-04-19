@@ -66,8 +66,8 @@ def process_urls(urls):
     }
 
     for url in urls:
-        normal_count = 0
-        strict_count = 0
+        normal_duplicates = 0
+        strict_duplicates = 0
         
         try:
             logger.info(f"开始处理 URL：{url}")
@@ -85,31 +85,39 @@ def process_urls(urls):
                 if not stripped or stripped.startswith('!'):
                     continue
                 
-                normal_count += 1
+                # 统计普通规则
+                normal_duplicates += 1
                 unique_normal.add(line)
                 logger.debug(f"处理普通规则：{line}")
                 
+                # 统计严格规则
                 if stripped.startswith(('||', '@@')):
-                    strict_count += 1
+                    strict_duplicates += 1
                     unique_strict.add(line)
                     logger.debug(f"处理严格规则：{line}")
             
-            logger.info(f"处理 URL：{url} 完成，共处理 {normal_count} 条普通规则，其中有效规则 {len(unique_normal)} 条，重复规则 {normal_count - len(unique_normal)} 条")
-            logger.info(f"处理 URL：{url} 完成，共处理 {strict_count} 条严格规则，其中有效规则 {len(unique_strict)} 条，重复规则 {strict_count - len(unique_strict)} 条")
+            # 计算有效规则数量
+            valid_normal = len(unique_normal)
+            valid_strict = len(unique_strict)
+            
+            logger.info(f"处理 URL：{url} 完成，共处理 {normal_duplicates} 条普通规则，有效规则 {valid_normal} 条，重复规则 {valid_normal - len(unique_normal)} 条")
+            logger.info(f"处理 URL：{url} 完成，共处理 {strict_duplicates} 条严格规则，有效规则 {valid_strict} 条，重复规则 {valid_strict - len(unique_strict)} 条")
+            
+            # 更新全局结果
+            results['normal'].extend(unique_normal)
+            results['strict'].extend(unique_strict)
             
             results['sources'].append({
                 'url': url,
-                'normal': normal_count,
-                'strict': strict_count
+                'normal': valid_normal,
+                'strict': valid_strict
             })
             
-            results['normal'] = list(unique_normal)
-            results['stats']['normal']['valid'] = len(results['normal'])
-            results['stats']['normal']['duplicates'] = normal_count - len(results['normal'])
-            
-            results['strict'] = list(unique_strict)
-            results['stats']['strict']['valid'] = len(results['strict'])
-            results['stats']['strict']['duplicates'] = strict_count - len(results['strict'])
+            # 更新统计信息
+            results['stats']['normal']['valid'] += valid_normal
+            results['stats']['normal']['duplicates'] += (valid_normal - len(unique_normal))
+            results['stats']['strict']['valid'] += valid_strict
+            results['stats']['strict']['duplicates'] += (valid_strict - len(unique_strict))
             
         except requests.exceptions.RequestException as e:
             logger.error(f"请求 URL：{url} 失败，错误信息：{str(e)}")
@@ -118,6 +126,8 @@ def process_urls(urls):
                 'normal': 0,
                 'strict': 0
             })
+            results['stats']['normal']['duplicates'] += normal_duplicates
+            results['stats']['strict']['duplicates'] += strict_duplicates
         except Exception as e:
             logger.error(f"处理 URL：{url} 时发生错误，错误信息：{str(e)}")
             results['sources'].append({
@@ -125,6 +135,8 @@ def process_urls(urls):
                 'normal': 0,
                 'strict': 0
             })
+            results['stats']['normal']['duplicates'] += normal_duplicates
+            results['stats']['strict']['duplicates'] += strict_duplicates
             continue
 
     logger.info("处理 URL 源数据完成")
