@@ -1,5 +1,10 @@
 import os
 import sys
+
+# 获取项目根目录路径（即包含 src 的目录）
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT_DIR)  # 将根目录加入模块搜索路径
+
 from src import (
     config,
     file_utils,
