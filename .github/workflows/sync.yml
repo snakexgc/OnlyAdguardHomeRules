@@ -30,11 +30,16 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: pip install requests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # 从文件安装
 
       - name: Generate rules
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/src  # 添加模块路径
         run: |
-          # 先同步最新代码
+          # 同步最新代码
           git pull origin main
           # 生成规则文件
           cd ${{ github.workspace }}
