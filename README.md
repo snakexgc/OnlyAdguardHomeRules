@@ -8,8 +8,8 @@
 ---
 
 ## 📦 当前版本
-**版本标识**: v202504181700  
-**更新时间**: 2025-04-18 17:00 UTC  
+**版本标识**: v202504190207  
+**更新时间**: 2025-04-19 02:07 UTC  
 
 ---
 
@@ -17,26 +17,26 @@
 | 数据源地址 | 源规则数 | OAdH规则数 |
 |----------|-----------|-----------|
 | 🔗 [https://anti-ad.net/easylist.txt](https://anti-ad.net/easylist.txt) | `81749` | `81716` |
-| 🔗 [https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockdns.txt](https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockdns.txt) | `222762` | `222762` |
+| 🔗 [https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockdns.txt](https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockdns.txt) | `222767` | `222767` |
 | 🔗 [https://raw.githubusercontent.com/miaoermua/AdguardFilter/main/rule.txt](https://raw.githubusercontent.com/miaoermua/AdguardFilter/main/rule.txt) | `300` | `298` |
-| 🔗 [https://adrules.top/adblock_plus.txt](https://adrules.top/adblock_plus.txt) | `393110` | `179438` |
+| 🔗 [https://adrules.top/adblock_plus.txt](https://adrules.top/adblock_plus.txt) | `393184` | `179492` |
 | 🔗 [https://raw.githubusercontent.com/afwfv/DD-AD/main/rule/DD-AD.txt](https://raw.githubusercontent.com/afwfv/DD-AD/main/rule/DD-AD.txt) | `634` | `537` |
 | 🔗 [https://raw.githubusercontent.com/changzhaoCZ/fqnovel-adrules/refs/heads/main/fqnovel-fxxk_ads](https://raw.githubusercontent.com/changzhaoCZ/fqnovel-adrules/refs/heads/main/fqnovel-fxxk_ads) | `50` | `49` |
 | 🔗 [https://raw.gitmirror.com/TTDNS/Cat/main/TT拒绝列表清单 (更新中).txt](https://raw.gitmirror.com/TTDNS/Cat/main/TT%E6%8B%92%E7%BB%9D%E5%88%97%E8%A1%A8%E6%B8%85%E5%8D%95%20%28%E6%9B%B4%E6%96%B0%E4%B8%AD%29.txt) | `199` | `134` |
-| 🔗 [https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt](https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt) | `107944` | `107943` |
-| 🔗 [https://raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt](https://raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt) | `814361` | `787931` |
+| 🔗 [https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt](https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt) | `107947` | `107946` |
+| 🔗 [https://raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt](https://raw.githubusercontent.com/guandasheng/adguardhome/refs/heads/main/rule/dns.txt) | `814655` | `788232` |
 
 ---
 
 ## 📊 规则统计
 **全部规则**：
-- 有效规则：`1104522`  - 重复过滤：`516587`
+- 有效规则：`1104841`  - 重复过滤：`516644`
 
 **OAdH规则 (OAdH_ALL)**：
-- 有效规则：`864242`  - 重复过滤：`516566`
+- 有效规则：`864548`  - 重复过滤：`516623`
 
 **OAdH去冲突规则 (OAdH_NCR)**：
-- 有效规则：`861749`  - 冲突过滤：`1945`
+- 有效规则：`862056`  - 冲突过滤：`1944`
 
 ---
 
